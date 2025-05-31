@@ -19,10 +19,7 @@ use bevy::{
 
 use crate::{
     events::{DraggingStartedEvent, DraggingStoppedEvent},
-    prelude::{
-        CardAutoZ, CardDraggable, CardDragging, CardHoverable, CardHovering, CardSize, CardSlot,
-        CardSlottable,
-    },
+    prelude::{AutoZ, CardSize, Draggable, Dragging, Hoverable, Hovering, Slot, Slottable},
     settings::BevyCardsSettings,
 };
 
@@ -75,10 +72,7 @@ pub fn hoverable(
     mut commands: Commands,
     pointer: Res<Pointer>,
     settings: Res<BevyCardsSettings>,
-    hoverable: Query<
-        (Entity, &Transform, Option<&CardSize>),
-        (With<CardHoverable>, Without<CardDragging>),
-    >,
+    hoverable: Query<(Entity, &Transform, Option<&CardSize>), (With<Hoverable>, Without<Dragging>)>,
 ) {
     for (entity, transform, card_size) in hoverable.iter() {
         let half_width = card_size.map(|c| c.0).unwrap_or(settings.card_size.x) * 0.5;
@@ -90,9 +84,9 @@ pub fn hoverable(
             && transform.translation.y + half_height > pointer.y;
 
         if hovering {
-            commands.entity(entity).insert(CardHovering);
+            commands.entity(entity).insert(Hovering);
         } else {
-            commands.entity(entity).remove::<CardHovering>();
+            commands.entity(entity).remove::<Hovering>();
         }
     }
 }
@@ -106,29 +100,21 @@ pub fn draggable(
     mut auto_z: ResMut<LastAutoZ>,
     query_draggable: Query<
         (Entity, &Transform),
-        (
-            With<CardHovering>,
-            With<CardDraggable>,
-            Without<CardDragging>,
-        ),
+        (With<Hovering>, With<Draggable>, Without<Dragging>),
     >,
     mut query_dragging: Query<
         (
             Entity,
             &mut Transform,
-            Has<CardAutoZ>,
-            Option<&CardSlottable>,
+            Has<AutoZ>,
+            Option<&Slottable>,
             Option<&CardSize>,
         ),
-        (With<CardDraggable>, With<CardDragging>),
+        (With<Draggable>, With<Dragging>),
     >,
-    query_card_slots: Query<
-        (Entity, &Transform, &CardSlot),
-        (
-            With<CardSlot>,
-            Without<CardHoverable>,
-            Without<CardDraggable>,
-        ),
+    mut query_card_slots: Query<
+        (Entity, &Transform, &mut Slot),
+        (With<Slot>, Without<Hoverable>, Without<Draggable>),
     >,
     mut ev_dragging_started: EventWriter<DraggingStartedEvent>,
     mut ev_dragging_stopped: EventWriter<DraggingStoppedEvent>,
@@ -136,7 +122,7 @@ pub fn draggable(
     if mouse_input.just_pressed(MouseButton::Left) {
         if let Some((entity, transform)) = query_draggable.iter().next() {
             debug!("Started dragging {:?} at {:?}", entity, pointer);
-            commands.entity(entity).insert(CardDragging);
+            commands.entity(entity).insert(Dragging);
 
             // remember original drag start position
             original_position.0.x = transform.translation.x;
@@ -152,13 +138,11 @@ pub fn draggable(
     if mouse_input.just_released(MouseButton::Left) {
         for (entity, mut transform, has_autoz, slottable, card_size) in query_dragging.iter_mut() {
             debug!("Stopped dragging {:?} at {:?}", entity, pointer);
-            commands.entity(entity).remove::<CardDragging>();
+            commands.entity(entity).remove::<Dragging>();
 
             if has_autoz {
                 auto_z.0 += AUTO_Z_DELTA;
             }
-
-            println!("slottable {:?}", slottable);
 
             // if is a slottable, return to original position if not slotted
             if slottable.is_some() {
@@ -167,17 +151,22 @@ pub fn draggable(
                 let half_width = card_size.map(|c| c.0).unwrap_or(settings.card_size.x) * 0.5;
                 let half_height = card_size.map(|c| c.1).unwrap_or(settings.card_size.y) * 0.5;
 
-                let mut can_place = false;
+                let mut was_able_to_place = false;
 
-                for (slot_entity, slot_transform, slot) in query_card_slots.iter() {
+                for (_, slot_transform, mut slot) in query_card_slots.iter_mut() {
                     // only allow slotting if they are of the same type
                     if slottable.0 != slot.1 {
                         continue;
                     }
 
+                    // already has something in it
+                    if slot.2.is_some() {
+                        continue;
+                    }
+
                     let slot_aabb = Aabb2d::new(
                         Vec2::new(slot_transform.translation.x, slot_transform.translation.y),
-                        slot.0 * 0.25,
+                        slot.0 * 0.5,
                     );
 
                     let card_aabb = Aabb2d::new(
@@ -189,16 +178,17 @@ pub fn draggable(
                         continue;
                     }
 
-                    can_place = true;
+                    was_able_to_place = true;
 
                     // cuz the card is now slotted, move it onto the slot and remove draggable
+                    slot.2 = Some(entity);
                     transform.translation.x = slot_transform.translation.x;
                     transform.translation.y = slot_transform.translation.y;
                     transform.translation.z = slot_transform.translation.z + AUTO_Z_DELTA;
-                    commands.entity(entity).remove::<CardDraggable>();
+                    commands.entity(entity).remove::<Draggable>();
                 }
 
-                if !can_place {
+                if !was_able_to_place {
                     transform.translation.x = original_position.0.x.clone();
                     transform.translation.y = original_position.0.y.clone();
                 }
@@ -215,7 +205,7 @@ pub fn draggable(
 pub fn dragging(
     pointer: Res<Pointer>,
     auto_z: Res<LastAutoZ>,
-    mut dragging: Query<(&mut Transform, Has<CardAutoZ>), With<CardDragging>>,
+    mut dragging: Query<(&mut Transform, Has<AutoZ>), With<Dragging>>,
 ) {
     for (mut transform, has_autoz) in dragging.iter_mut() {
         // TODO: can we tween or modify this through some closure of sorts?
