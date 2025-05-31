@@ -1,0 +1,32 @@
+[package]
+name = "bevy_cards"
+version = "0.16.0"
+authors = ["Christopher Kaster <me@atomicptr.de>"]
+description = "A simple, no dependency bevy plugin for making card games"
+edition = "2024"
+readme = "README.md"
+repository = "https://github.com/atomicptr/bevy_cards"
+keywords = ["bevy", "2d", "card", "tcg", "card-game"]
+categories = ["game-development"]
+exclude = ["devenv*"]
+license = "MIT"
+
+[dependencies]
+bevy = { version = "0.16", default-features = false, features = [
+    "bevy_core_pipeline",
+    "bevy_log",
+    "bevy_render",
+    "bevy_window",
+] }
+
+[dev-dependencies]
+bevy = { version = "0.16.0", default-features = false, features = [
+    "bevy_asset",
+    "bevy_sprite",
+    "bevy_state",
+    "bevy_winit",
+    "multi_threaded",
+    "png",
+    "wayland",
+    "x11",
+] }
