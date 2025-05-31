@@ -18,7 +18,7 @@ fn setup(mut commands: Commands) {
 
     // spawn a green card
     commands.spawn((
-        Card, // Card can be dragged and dropped
+        Card, // Card component enables this entity to be dragged and dropped
         Sprite {
             color: Color::srgb(0.0, 1.0, 0.0),
             custom_size: Some(Vec2::new(CARD_WIDTH as f32, CARD_HEIGHT as f32)),

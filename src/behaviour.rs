@@ -1,8 +1,7 @@
 use bevy::{
     ecs::{
-        component::Component,
         entity::Entity,
-        event::{Event, EventWriter},
+        event::EventWriter,
         query::{Has, With, Without},
         resource::Resource,
         system::{Commands, Query, Res, ResMut},
@@ -15,7 +14,11 @@ use bevy::{
     window::{PrimaryWindow, Window},
 };
 
-use crate::settings::BevyCardsSettings;
+use crate::{
+    events::{DraggingStartedEvent, DraggingStoppedEvent},
+    prelude::{CardAutoZ, CardDraggable, CardDragging, CardHoverable, CardHovering, CardSize},
+    settings::BevyCardsSettings,
+};
 
 #[derive(Default, Debug, Resource)]
 pub struct Pointer {
@@ -27,39 +30,6 @@ const AUTO_Z_DELTA: f32 = 0.00001;
 
 #[derive(Default, Resource)]
 pub struct LastAutoZ(pub f32);
-
-#[derive(Default, Component)]
-#[require(Transform)]
-pub struct CardHoverable;
-
-#[derive(Default, Component)]
-#[require(Transform)]
-pub struct CardHovering;
-
-#[derive(Default, Component)]
-#[require(Transform)]
-pub struct CardDraggable;
-
-#[derive(Default, Component)]
-#[require(Transform)]
-pub struct CardDragging;
-
-#[derive(Debug, Default, Component)]
-#[require(Transform)]
-pub struct CardSize(pub f32, pub f32);
-
-#[derive(Default, Component)]
-pub struct CardAutoZ;
-
-#[derive(Default, Component)]
-#[require(Transform, CardHoverable, CardDraggable, CardAutoZ)]
-pub struct Card;
-
-#[derive(Event)]
-pub struct DraggingStartedEvent(pub Entity, pub Vec2);
-
-#[derive(Event)]
-pub struct DraggingStoppedEvent(pub Entity, pub Vec2);
 
 pub fn update_pointer(
     mut pointer: ResMut<Pointer>,
@@ -112,7 +82,6 @@ pub fn hoverable(
 
         if hovering {
             commands.entity(entity).insert(CardHovering);
-            return;
         } else {
             commands.entity(entity).remove::<CardHovering>();
         }
