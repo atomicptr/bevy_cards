@@ -4,7 +4,9 @@ use bevy::{
 };
 
 use crate::{
-    behaviour::{LastAutoZ, Pointer, draggable, dragging, hoverable, update_pointer},
+    behaviour::{
+        LastAutoZ, OriginalPosition, Pointer, draggable, dragging, hoverable, update_pointer,
+    },
     events::{DraggingStartedEvent, DraggingStoppedEvent},
     settings::BevyCardsSettings,
 };
@@ -20,6 +22,7 @@ impl Plugin for BevyCardsPlugin {
             card_size: self.card_size,
         })
         .insert_resource(Pointer::default())
+        .insert_resource(OriginalPosition::default())
         .insert_resource(LastAutoZ(self.initial_auto_z_value.or(Some(0.0)).unwrap()))
         .add_event::<DraggingStartedEvent>()
         .add_event::<DraggingStoppedEvent>()
