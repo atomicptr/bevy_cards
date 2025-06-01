@@ -222,7 +222,7 @@ pub fn draggable(
                     if should_snap_into_slot {
                         transform.translation.x = slot_transform.translation.x;
                         transform.translation.y = slot_transform.translation.y;
-                        transform.translation.z = slot_transform.translation.z;
+                        transform.translation.z = slot_transform.translation.z + DRAG_Z_DELTA;
                     }
 
                     ev_slotted_into.write(SlottedIntoEvent {
