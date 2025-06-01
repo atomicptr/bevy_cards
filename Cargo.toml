@@ -8,7 +8,7 @@ readme = "README.md"
 repository = "https://github.com/atomicptr/bevy_cards"
 keywords = ["bevy", "2d", "card", "tcg", "card-game"]
 categories = ["game-development"]
-exclude = ["devenv*", ".github/*"]
+exclude = ["devenv*", ".github/*", "assets/*"]
 license = "MIT"
 
 [dependencies]

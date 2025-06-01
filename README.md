@@ -57,7 +57,15 @@ fn setup(mut commands: Commands) {
 
 Run this example using ``cargo run --example readme``
 
-![Readme example in action](./.github/example-readme.gif)
+![Readme example in action](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnpiam44MnF0cjM5bTlpbWQ4YnpzN3h0eGR3Z252OWd3eHhrdDYweSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/A5e7Hu5k92sS99UHko/giphy.gif)
+
+### Slots
+
+![Slots example in action](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGNhOTJpanBubjd6Zzh0d3NtdGN2MGF4eTVmbm94ejY4MmZiM3NrbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3sVNMLjDBNIx5zLlMt/giphy.gif)
+
+[Example Code](./examples/slots.rs)
+
+Run this example using ``cargo run --example slots``
 
 ## Concepts
 
@@ -77,6 +85,10 @@ for all kinds of changes, be it bug fixes or feature updates.
 | bevy   | bevy_pixcam | branch |
 |--------|-------------|--------|
 | 0.16.x | 0.16.x      | master |
+
+## Assets
+
+- [assets/CuteCards.png by DANI MACCARI](https://dani-maccari.itch.io/cute-cards-deck)
 
 ## License
 
