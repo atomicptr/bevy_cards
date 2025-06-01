@@ -5,15 +5,18 @@ use bevy::{
 
 use crate::{
     behaviour::{
-        LastAutoZ, OriginalPosition, Pointer, draggable, dragging, hoverable, update_pointer,
+        DragTargetPrevPosition, Pointer, clean_up_previous_slotted_state, draggable, dragging,
+        hoverable, update_pointer,
     },
-    events::{DraggingStartedEvent, DraggingStoppedEvent},
+    events::{
+        DragEndedEvent, DragStartedEvent, HoverEndedEvent, HoverStartedEvent, SlottedIntoEvent,
+        UnknownSlotTargetEvent,
+    },
     settings::BevyCardsSettings,
 };
 
 pub struct BevyCardsPlugin {
     pub card_size: Vec2,
-    pub initial_auto_z_value: Option<f32>,
 }
 
 impl Plugin for BevyCardsPlugin {
@@ -22,11 +25,23 @@ impl Plugin for BevyCardsPlugin {
             card_size: self.card_size,
         })
         .insert_resource(Pointer::default())
-        .insert_resource(OriginalPosition::default())
-        .insert_resource(LastAutoZ(self.initial_auto_z_value.or(Some(0.0)).unwrap()))
-        .add_event::<DraggingStartedEvent>()
-        .add_event::<DraggingStoppedEvent>()
-        .add_systems(Update, (update_pointer, hoverable, draggable, dragging));
+        .insert_resource(DragTargetPrevPosition::default())
+        .add_event::<DragStartedEvent>()
+        .add_event::<DragEndedEvent>()
+        .add_event::<HoverStartedEvent>()
+        .add_event::<HoverEndedEvent>()
+        .add_event::<SlottedIntoEvent>()
+        .add_event::<UnknownSlotTargetEvent>()
+        .add_systems(
+            Update,
+            (
+                update_pointer,
+                hoverable,
+                draggable,
+                dragging,
+                clean_up_previous_slotted_state,
+            ),
+        );
     }
 }
 
@@ -34,7 +49,6 @@ impl BevyCardsPlugin {
     pub fn new(card_width: f32, card_height: f32) -> Self {
         Self {
             card_size: Vec2::new(card_width, card_height),
-            initial_auto_z_value: Some(0.0),
         }
     }
 }

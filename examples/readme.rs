@@ -18,7 +18,8 @@ fn setup(mut commands: Commands) {
 
     // spawn a green card
     commands.spawn((
-        Card, // Card component enables this entity to be dragged and dropped
+        Card,
+        Draggable, // to drag & drop the card, we need to add the "Draggable" component
         Sprite {
             color: Color::srgb(0.0, 1.0, 0.0),
             custom_size: Some(Vec2::new(CARD_WIDTH as f32, CARD_HEIGHT as f32)),
@@ -30,7 +31,8 @@ fn setup(mut commands: Commands) {
     // spawn a blue card, thats somewhat smaller
     commands.spawn((
         Card,
-        CardSize(CARD_WIDTH as f32 * 0.8, CARD_HEIGHT as f32 * 0.8),
+        Draggable,
+        CardSize(Vec2::new(CARD_WIDTH as f32 * 0.8, CARD_HEIGHT as f32 * 0.8)),
         Sprite {
             color: Color::srgb(0.0, 0.0, 1.0),
             custom_size: Some(Vec2::new(CARD_WIDTH as f32 * 0.8, CARD_HEIGHT as f32 * 0.8)),

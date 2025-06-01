@@ -4,7 +4,22 @@ use bevy::{
 };
 
 #[derive(Event)]
-pub struct DraggingStartedEvent(pub Entity, pub Vec2);
+pub struct DragStartedEvent(pub Entity, pub Vec2);
 
 #[derive(Event)]
-pub struct DraggingStoppedEvent(pub Entity, pub Vec2);
+pub struct DragEndedEvent(pub Entity, pub Vec2);
+
+#[derive(Event)]
+pub struct HoverStartedEvent(pub Entity);
+
+#[derive(Event)]
+pub struct HoverEndedEvent(pub Entity);
+
+#[derive(Event)]
+pub struct SlottedIntoEvent {
+    pub card: Entity,
+    pub slot: Entity,
+}
+
+#[derive(Event)]
+pub struct UnknownSlotTargetEvent(pub Entity);

@@ -5,7 +5,7 @@ A simple, no dependency bevy plugin for making card games
 ## Features
 
 - Hover over, drag & drop cards
-- Drop cards into slots or lines (soon)
+- Drop cards into slots
 
 ## How to use
 
@@ -30,7 +30,8 @@ fn setup(mut commands: Commands) {
 
     // spawn a green card
     commands.spawn((
-        Card, // Card component enables this entity to be dragged and dropped
+        Card,
+        Draggable, // to drag & drop the card, we need to add the "Draggable" component
         Sprite {
             color: Color::srgb(0.0, 1.0, 0.0),
             custom_size: Some(Vec2::new(CARD_WIDTH as f32, CARD_HEIGHT as f32)),
@@ -42,7 +43,8 @@ fn setup(mut commands: Commands) {
     // spawn a blue card, thats somewhat smaller
     commands.spawn((
         Card,
-        CardSize(CARD_WIDTH as f32 * 0.8, CARD_HEIGHT as f32 * 0.8),
+        Draggable,
+        CardSize(Vec2::new(CARD_WIDTH as f32 * 0.8, CARD_HEIGHT as f32 * 0.8)),
         Sprite {
             color: Color::srgb(0.0, 0.0, 1.0),
             custom_size: Some(Vec2::new(CARD_WIDTH as f32 * 0.8, CARD_HEIGHT as f32 * 0.8)),
@@ -52,6 +54,20 @@ fn setup(mut commands: Commands) {
     ));
 }
 ```
+
+Run this example using ``cargo run --example readme``
+
+![Readme example in action](./.github/example-readme.gif)
+
+## Concepts
+
+### Card
+
+Card is a component enabling your entity to be hovered, dragged and dropped around
+
+### Slot
+
+Slots are places your card can be dropped into
 
 ## Bevy versions supported
 

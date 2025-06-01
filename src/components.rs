@@ -4,9 +4,38 @@ use bevy::{
     transform::components::Transform,
 };
 
-#[derive(Default, Component)]
-#[require(Transform)]
-pub struct Hoverable;
+type GroupId = u16;
+
+#[derive(Debug, Component)]
+pub struct Card;
+
+#[derive(Component)]
+pub struct Draggable;
+
+#[derive(Default, Debug, Component)]
+pub struct CardSize(pub Vec2);
+
+impl CardSize {
+    pub fn half_size(&self) -> Vec2 {
+        self.0 * 0.5
+    }
+}
+
+#[derive(Default, Debug, Component)]
+pub struct Slottable(pub GroupId);
+
+#[derive(Default, Debug, Component)]
+pub struct Slot {
+    pub size: Vec2,
+    pub slot_group: GroupId,
+    pub card: Option<Entity>,
+}
+
+#[derive(Component)]
+pub struct SnapBack;
+
+#[derive(Component)]
+pub struct SnapIntoSlot;
 
 #[derive(Default, Component)]
 #[require(Transform)]
@@ -14,25 +43,4 @@ pub struct Hovering;
 
 #[derive(Default, Component)]
 #[require(Transform)]
-pub struct Draggable;
-
-#[derive(Default, Component)]
-#[require(Transform)]
 pub struct Dragging;
-
-#[derive(Debug, Default, Component)]
-#[require(Transform)]
-pub struct CardSize(pub f32, pub f32);
-
-#[derive(Default, Component)]
-pub struct AutoZ;
-
-#[derive(Default, Component)]
-#[require(Transform, Hoverable, Draggable, AutoZ)]
-pub struct Card;
-
-#[derive(Debug, Default, Component)]
-pub struct Slot(pub Vec2, pub Option<u16>, pub Option<Entity>);
-
-#[derive(Debug, Default, Component)]
-pub struct Slottable(pub Option<u16>);
