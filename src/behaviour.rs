@@ -1,7 +1,8 @@
 use bevy::{
+    camera::Camera,
     ecs::{
         entity::Entity,
-        event::{EventReader, EventWriter},
+        message::{MessageReader, MessageWriter},
         query::{Has, With, Without},
         resource::Resource,
         system::{Commands, Query, Res, ResMut},
@@ -12,7 +13,6 @@ use bevy::{
         Vec2,
         bounding::{Aabb2d, IntersectsVolume},
     },
-    render::camera::Camera,
     transform::components::{GlobalTransform, Transform},
     window::{PrimaryWindow, Window},
 };
@@ -20,8 +20,8 @@ use bevy::{
 use crate::{
     components::*,
     events::{
-        DragEndedEvent, DragStartedEvent, HoverEndedEvent, HoverStartedEvent, SlottedIntoEvent,
-        UnknownSlotTargetEvent,
+        DragEndedMessage, DragStartedMessage, HoverEndedMessage, HoverStartedMessage,
+        SlottedIntoMessage, UnknownSlotTargetMessage,
     },
     settings::BevyCardsSettings,
 };
@@ -84,8 +84,8 @@ pub fn hoverable(
         (Entity, &Transform, Option<&CardSize>),
         (With<Card>, With<Hovering>, Without<Dragging>),
     >,
-    mut ev_hover_started: EventWriter<HoverStartedEvent>,
-    mut ev_hover_ended: EventWriter<HoverEndedEvent>,
+    mut ev_hover_started: MessageWriter<HoverStartedMessage>,
+    mut ev_hover_ended: MessageWriter<HoverEndedMessage>,
 ) {
     for (entity, transform, card_size) in hoverable.iter() {
         let half_size =
@@ -99,7 +99,7 @@ pub fn hoverable(
         if hovering {
             debug!("Hover started for {:?}", entity);
             commands.entity(entity).insert(Hovering);
-            ev_hover_started.write(HoverStartedEvent(entity));
+            ev_hover_started.write(HoverStartedMessage(entity));
         }
     }
 
@@ -115,7 +115,7 @@ pub fn hoverable(
         if !hovering {
             debug!("Hover ended for {:?}", entity);
             commands.entity(entity).remove::<Hovering>();
-            ev_hover_ended.write(HoverEndedEvent(entity));
+            ev_hover_ended.write(HoverEndedMessage(entity));
         }
     }
 }
@@ -147,10 +147,10 @@ pub fn draggable(
         (With<Card>, With<Dragging>),
     >,
     mut query_card_slots: Query<(Entity, &Transform, &mut Slot), (With<Slot>, Without<Card>)>,
-    mut ev_dragging_started: EventWriter<DragStartedEvent>,
-    mut ev_dragging_stopped: EventWriter<DragEndedEvent>,
-    mut ev_slotted_into: EventWriter<SlottedIntoEvent>,
-    mut ev_unknown_slot_target: EventWriter<UnknownSlotTargetEvent>,
+    mut ev_dragging_started: MessageWriter<DragStartedMessage>,
+    mut ev_dragging_stopped: MessageWriter<DragEndedMessage>,
+    mut ev_slotted_into: MessageWriter<SlottedIntoMessage>,
+    mut ev_unknown_slot_target: MessageWriter<UnknownSlotTargetMessage>,
 ) {
     if mouse_input.just_pressed(MouseButton::Left) {
         if let Some((entity, transform)) = query_draggable.iter().next() {
@@ -162,7 +162,7 @@ pub fn draggable(
             previous_pos.y = transform.translation.y;
             previous_pos.z = transform.translation.z;
 
-            ev_dragging_started.write(DragStartedEvent(entity, Vec2::new(pointer.x, pointer.y)));
+            ev_dragging_started.write(DragStartedMessage(entity, Vec2::new(pointer.x, pointer.y)));
         }
     }
 
@@ -225,7 +225,7 @@ pub fn draggable(
                         transform.translation.z = slot_transform.translation.z + DRAG_Z_DELTA;
                     }
 
-                    ev_slotted_into.write(SlottedIntoEvent {
+                    ev_slotted_into.write(SlottedIntoMessage {
                         card: entity,
                         slot: slot_entity,
                     });
@@ -235,7 +235,7 @@ pub fn draggable(
 
                 if !was_able_to_place {
                     debug!("Failed to slot {:?}", entity);
-                    ev_unknown_slot_target.write(UnknownSlotTargetEvent(entity));
+                    ev_unknown_slot_target.write(UnknownSlotTargetMessage(entity));
 
                     if should_snap_back {
                         transform.translation.x = previous_pos.x;
@@ -245,13 +245,13 @@ pub fn draggable(
                 }
             }
 
-            ev_dragging_stopped.write(DragEndedEvent(entity, Vec2::new(pointer.x, pointer.y)));
+            ev_dragging_stopped.write(DragEndedMessage(entity, Vec2::new(pointer.x, pointer.y)));
         }
     }
 }
 
 pub fn clean_up_previous_slotted_state(
-    mut event_slotted_into: EventReader<SlottedIntoEvent>,
+    mut event_slotted_into: MessageReader<SlottedIntoMessage>,
     mut query_slots: Query<(Entity, &mut Slot)>,
 ) {
     for ev in event_slotted_into.read() {

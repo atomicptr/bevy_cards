@@ -9,8 +9,8 @@ use crate::{
         hoverable, update_pointer,
     },
     events::{
-        DragEndedEvent, DragStartedEvent, HoverEndedEvent, HoverStartedEvent, SlottedIntoEvent,
-        UnknownSlotTargetEvent,
+        DragEndedMessage, DragStartedMessage, HoverEndedMessage, HoverStartedMessage,
+        SlottedIntoMessage, UnknownSlotTargetMessage,
     },
     settings::BevyCardsSettings,
 };
@@ -26,12 +26,12 @@ impl Plugin for BevyCardsPlugin {
         })
         .insert_resource(Pointer::default())
         .insert_resource(DragTargetPrevPosition::default())
-        .add_event::<DragStartedEvent>()
-        .add_event::<DragEndedEvent>()
-        .add_event::<HoverStartedEvent>()
-        .add_event::<HoverEndedEvent>()
-        .add_event::<SlottedIntoEvent>()
-        .add_event::<UnknownSlotTargetEvent>()
+        .add_message::<DragStartedMessage>()
+        .add_message::<DragEndedMessage>()
+        .add_message::<HoverStartedMessage>()
+        .add_message::<HoverEndedMessage>()
+        .add_message::<SlottedIntoMessage>()
+        .add_message::<UnknownSlotTargetMessage>()
         .add_systems(
             Update,
             (

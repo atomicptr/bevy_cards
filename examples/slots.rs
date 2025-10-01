@@ -20,7 +20,7 @@ fn main() -> AppExit {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: "Bevy Card Effects".to_string(),
-                        resolution: WindowResolution::new(1280.0, 800.0),
+                        resolution: WindowResolution::new(1280, 800),
                         resizable: false,
                         ..default()
                     }),
@@ -71,9 +71,9 @@ fn setup(mut commands: Commands, card_asset: Res<CardMaker>) {
 }
 
 fn card_hover(
-    mut ev_hover_started: EventReader<HoverStartedEvent>,
-    mut ev_hover_ended: EventReader<HoverEndedEvent>,
-    mut ev_drag_started: EventReader<DragStartedEvent>,
+    mut ev_hover_started: MessageReader<HoverStartedMessage>,
+    mut ev_hover_ended: MessageReader<HoverEndedMessage>,
+    mut ev_drag_started: MessageReader<DragStartedMessage>,
     mut query: Query<&mut Transform, (With<Card>, With<Draggable>)>,
 ) {
     ev_hover_started.read().for_each(|ev| {

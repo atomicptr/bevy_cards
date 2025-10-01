@@ -1,6 +1,6 @@
 [package]
 name = "bevy_cards"
-version = "0.16.0"
+version = "0.17.0"
 authors = ["Christopher Kaster <me@atomicptr.de>"]
 description = "A simple, no dependency bevy plugin for making card games"
 edition = "2024"
@@ -12,7 +12,7 @@ exclude = ["devenv*", ".github/*", "assets/*"]
 license = "MIT"
 
 [dependencies]
-bevy = { version = "0.16", default-features = false, features = [
+bevy = { version = "0.17.1", default-features = false, features = [
     "bevy_core_pipeline",
     "bevy_log",
     "bevy_render",
@@ -20,9 +20,10 @@ bevy = { version = "0.16", default-features = false, features = [
 ] }
 
 [dev-dependencies]
-bevy = { version = "0.16.0", default-features = false, features = [
+bevy = { version = "0.17.1", default-features = false, features = [
     "bevy_asset",
     "bevy_sprite",
+    "bevy_sprite_render",
     "bevy_state",
     "bevy_winit",
     "multi_threaded",
