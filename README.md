@@ -84,7 +84,8 @@ for all kinds of changes, be it bug fixes or feature updates.
 
 | bevy   | bevy_pixcam | branch |
 |--------|-------------|--------|
-| 0.17.x | 0.17.x      | master |
+| 0.18.x | 0.18.x      | master |
+| 0.17.x | 0.17.x      | 0.17   |
 | 0.16.x | 0.16.x      | 0.16   |
 
 ## Assets
